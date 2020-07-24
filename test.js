@@ -77,4 +77,11 @@ describe('src/index.js', () => {
     new Function('import_', code)(mock);
     expect(mock.mock.calls).toBe([["./module.mjs"]]);
   });
+
+  test('can handle multiple dot extension correctly', () => {
+    const input = 'export * from "./module.zzz.aaa";';
+    const options = { extMapping: { '.aaa': '.a', '.zzz.aaa': '.z' } };
+    const code = transform(input, options);
+    expect(code).toContain('require("./module.z")');
+  });
 });
