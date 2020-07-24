@@ -1,0 +1,43 @@
+{
+  "name": "babel-plugin-replace-import-extension",
+  "version": "1.0.0",
+  "description": "Babel plugin to replace extension of file name written in import statement",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [
+    "babel",
+    "plugin",
+    "replace",
+    "convert",
+    "transform",
+    "rewrite",
+    "import",
+    "extension",
+    "ext",
+    "file",
+    "name",
+    "filename",
+    "js",
+    "mjs",
+    "cjs",
+    "require",
+    "es",
+    "module",
+    "commonjs"
+  ],
+  "author": "silane",
+  "files": [
+    "package.json",
+    "README.md",
+    "src/*",
+    "test.js"
+  ],
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@babel/core": "^7.10.5",
+    "@babel/plugin-transform-modules-commonjs": "^7.10.4",
+    "jest": "^26.1.0"
+  }
+}
