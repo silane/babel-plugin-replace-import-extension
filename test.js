@@ -16,7 +16,7 @@ describe('src/index.js', () => {
     const code = babel.transform(input, { plugins: [[plugin, options]] }).code;
     expect(code).toContain('import foo from "./foo.cjs"');
   });
-  
+
   test('extension is correctly replaced', () => {
     const input = 'import foo from "./foo.js";';
     const options = { extMapping: { '.js': '.cjs', '.sj': '.sjc' } };

@@ -13,7 +13,7 @@ function transformExtension(filepath, extMapping) {
     }
     return filepath;
   }
-  
+
   for(let [origExt, newExt] of Object.entries(extMapping)) {
     if(filepath.endsWith(origExt)) {
       return filepath.slice(0, -origExt.length) + newExt;
@@ -38,7 +38,7 @@ module.exports = function({ types: t }) {
           return;
         }
         const source = path.node.source;
-        
+
         source.value = transformExtension(source.value, extMapping);
       },
       // For re-exporting
@@ -51,7 +51,7 @@ module.exports = function({ types: t }) {
         if(source == null) {
           return;
         }
-        
+
         source.value = transformExtension(source.value, extMapping);
       },
       // For re-exporting
@@ -64,7 +64,7 @@ module.exports = function({ types: t }) {
         if(source == null) {
           return;
         }
-        
+
         source.value = transformExtension(source.value, extMapping);
       },
       // For dynamic import
