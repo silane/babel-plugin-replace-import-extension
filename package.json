@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "Babel plugin to replace extension of file name written in import statement",
   "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/silane/babel-plugin-replace-import-extension.git"
+  },
   "scripts": {
     "test": "jest"
   },
