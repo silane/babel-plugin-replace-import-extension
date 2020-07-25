@@ -44,20 +44,7 @@ module.exports = function({ types: t }) {
         source.value = transformExtension(source.value, extMapping);
       },
       // For re-exporting
-      ExportNamedDeclaration(path, state) {
-        const extMapping = getOption(state, 'extMapping');
-        if(!extMapping) {
-          return;
-        }
-        const source = path.node.source;
-        if(source == null) {
-          return;
-        }
-
-        source.value = transformExtension(source.value, extMapping);
-      },
-      // For re-exporting
-      ExportAllDeclaration(path, state) {
+      'ExportNamedDeclaration|ExportAllDeclaration'(path, state) {
         const extMapping = getOption(state, 'extMapping');
         if(!extMapping) {
           return;
