@@ -62,28 +62,29 @@ describe('src/index.js', () => {
     expect(code).toContain('require("package.foo")');
   });
 
-  test('extension in "named re-export" statement is changed', () => {
+  test('extension in "named re-export" statement is correctly replaced',
+       () => {
     const input = 'export { foo } from "./module.ext";';
     const options = { extMapping: { '.ext': '.mjs' } };
     const code = transform(input, options);
     expect(code).toContain('require("./module.mjs")');
   });
 
-  test('extension in "re-export all" statement is changed', () => {
+  test('extension in "re-export all" statement is correctly replaced', () => {
     const input = 'export * from "./module.ext";';
     const options = { extMapping: { '.ext': '.mjs' } };
     const code = transform(input, options);
     expect(code).toContain('require("./module.mjs")');
   });
 
-  test('extension in dynamic import is changed', () => {
+  test('extension in dynamic import is correctly replaced', () => {
     const input = 'import("./module" + ".ext");';
     const options = { extMapping: { '.ext': '.mjs' } };
     let code = transform(input, options);
     assertDynamicImportArgument(code, ['./module.mjs']);
   });
 
-  test('can handle multiple dot extension correctly', () => {
+  test('multiple dot extension is correctly replaced', () => {
     const input = 'export * from "./module.zzz.aaa";';
     const options = { extMapping: { '.aaa': '.a', '.zzz.aaa': '.z' } };
     const code = transform(input, options);
