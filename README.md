@@ -1,6 +1,7 @@
 # babel-plugin-replace-import-extension
 
-Babel plugin to replace extension of file name written in import statement.
+Babel plugin to replace extension of file name written in import statement and
+dynamic import.
 
 ## Installation
 ```shell
