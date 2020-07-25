@@ -16,13 +16,18 @@ With the option:
 ### In
 ```javascript
 import { foo } from './module1.js';
-export { bar } from './module2.js'; // Re-exporting
+export { bar } from './module2.js'; // Works for re-exporting
+const promise = import('./module3' + '.js'); // Also works for dynamic import!
 ```
 
 ### Out
 ```javascript
 import { foo } from './module1.mjs';
 export { bar } from './module2.mjs';
+
+// In dynamic import, function to replace extension is inserted.
+// Note the actual code is not exactly the same.
+const promise = import(transformExtension('./module3' + '.js'));
 ```
 
 ## Why We Need This Plugin?
@@ -50,7 +55,7 @@ If project root `package.json` has `type` field of `module`, Babel config of
 ```json
 {
   "plugins": [
-    ["replace-import-extension", { "extMapping": { ".js": ".cjs"}}],
+    ["replace-import-extension", { "extMapping": { ".js": ".cjs" }}],
     ["@babel/transform-modules-commonjs"]
   ]
 }
@@ -64,7 +69,7 @@ used together like,
 {
   "presets": [["@babel/env"]],
   "plugins": [
-    ["replace-import-extension", { "extMapping": { ".js": ".cjs"}}]
+    ["replace-import-extension", { "extMapping": { ".js": ".cjs" }}]
   ]
 }
 ```
@@ -76,7 +81,7 @@ be done by Babel config of
 ```json
 {
   "plugins": [
-    ["replace-import-extension", { "extMapping": { ".js": ".mjs"}}]
+    ["replace-import-extension", { "extMapping": { ".js": ".mjs" }}]
   ]
 }
 ```
@@ -92,6 +97,3 @@ Leading `.` is mandatory.
 
 Both the original and the converted extensions can be empty string `''`, which means
 no extension. You can use this feature to add or remove extension.
-
-## Limitation
-Dynamic import is not supported.
