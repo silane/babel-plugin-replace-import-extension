@@ -9,6 +9,14 @@ function transform(input, options) {
   }).code;
 }
 
+function assertDynamicImportArgument(code, expected){
+  code = code.replace('import(', 'import_(');
+  const import_ = jest.fn();
+  new Function('import_', code)(import_);
+  for(let [idx, e] of expected.entries())
+    expect(import_).toHaveBeenNthCalledWith(idx + 1, e);
+}
+
 describe('src/index.js', () => {
   test('extension is correctly replaced without CommonJS translation', () => {
     const input = 'import foo from "./foo.js";';
@@ -72,10 +80,7 @@ describe('src/index.js', () => {
     const input = 'import("./module" + ".ext");';
     const options = { extMapping: { '.ext': '.mjs' } };
     let code = transform(input, options);
-    code = code.replace('import(', 'import_(');
-    const mock = jest.fn();
-    new Function('import_', code)(mock);
-    expect(mock.mock.calls).toEqual([["./module.mjs"]]);
+    assertDynamicImportArgument(code, ['./module.mjs']);
   });
 
   test('can handle multiple dot extension correctly', () => {
