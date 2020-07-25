@@ -1,3 +1,6 @@
+const { parseSync } = require('@babel/core');
+
+
 function transformExtension(filepath, extMapping) {
   if(!filepath.startsWith('./') && !filepath.startsWith('../')) {
     // Package import
@@ -23,6 +26,9 @@ function transformExtension(filepath, extMapping) {
   }
   return filepath;
 }
+const astTransformExtension = parseSync(
+  `(${transformExtension.toString()})`
+).program.body[0].expression;
 
 
 function getOption(state, key) {
@@ -60,15 +66,25 @@ module.exports = function({ types: t }) {
       CallExpression(path, state) {
         // TODO: Implement dynamic import
 
-        // const opts = state.opts || {};
-        // const extMapping = opts.extMapping;
-        // if(!extMapping) {
-        //   return;
-        // }
-        // if(path.node.callee.type !== 'Import') {
-        //   return;
-        // }
-        // const argument = path.node.arguments[0];
+        const opts = state.opts || {};
+        const extMapping = opts.extMapping;
+        if(!extMapping) {
+          return;
+        }
+        if(!path.node.callee || path.node.callee.type !== 'Import') {
+          return;
+        }
+
+        const astExtMapping = t.objectExpression(
+          Object.entries(extMapping).map(x => t.objectProperty(
+            t.stringLiteral(x[0]), t.stringLiteral(x[1])
+          ))
+        );
+
+        const argument = path.get('arguments.0');
+        argument.replaceWith(t.callExpression(
+          astTransformExtension, [argument.node, astExtMapping]
+        ));
       },
     },
   };

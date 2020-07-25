@@ -68,14 +68,14 @@ describe('src/index.js', () => {
     expect(code).toContain('require("./module.mjs")');
   });
 
-  test.skip('extension in dynamic import is changed', () => {
-    const input = 'import("./module.ext");';
+  test('extension in dynamic import is changed', () => {
+    const input = 'import("./module" + ".ext");';
     const options = { extMapping: { '.ext': '.mjs' } };
     let code = transform(input, options);
     code = code.replace('import(', 'import_(');
     const mock = jest.fn();
     new Function('import_', code)(mock);
-    expect(mock.mock.calls).toBe([["./module.mjs"]]);
+    expect(mock.mock.calls).toEqual([["./module.mjs"]]);
   });
 
   test('can handle multiple dot extension correctly', () => {
