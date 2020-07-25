@@ -57,7 +57,7 @@ If project root `package.json` has `type` field of `module`, Babel config of
 ```
 will convert the file extension from `.js` to `.cjs` and convert ESModule to
 CommonJS, allowing both version's code exist together while Node can handle
-each versions correctly. (`@babel/transform-modules-commonjs` must be
+each versions correctly. (`@babel/plugin-transform-modules-commonjs` must be
 installed.) Or if you also need other translations, `@babel/env` preset can be
 used together like,
 ```json
