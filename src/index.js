@@ -43,7 +43,8 @@ function transformExtension(filepath, extMapping) {
   return filepath;
 }
 const astTransformExtension = parseSync(
-  `(${transformExtension.toString()})`
+  `(${transformExtension.toString()})`,
+  { babelrc: false, configFile: false }
 ).program.body[0].expression;
 
 
