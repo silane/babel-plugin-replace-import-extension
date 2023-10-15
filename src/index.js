@@ -81,8 +81,6 @@ module.exports = function({ types: t }) {
       },
       // For dynamic import
       CallExpression(path, state) {
-        // TODO: Implement dynamic import
-
         const opts = state.opts || {};
         const extMapping = opts.extMapping;
         if(!extMapping) {
@@ -99,6 +97,15 @@ module.exports = function({ types: t }) {
         );
 
         const argument = path.get('arguments.0');
+
+        // transform the string directly if it ends with an constant extension
+        if (argument.type === 'StringLiteral' && /\.(\w+)$/.test(argument.node.value)) {
+          argument.node.value = transformExtension(argument.node.value, extMapping);
+          return;
+        }
+
+        // otherwise inject the transform function into the code
+        // TODO: avoid injecting the transform function multiple times
         argument.replaceWith(t.callExpression(
           astTransformExtension, [argument.node, astExtMapping]
         ));

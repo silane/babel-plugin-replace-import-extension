@@ -93,6 +93,21 @@ describe('src/index.js', () => {
     expect(code).toContain('require("./module.mjs")');
   });
 
+
+  test('extension in dynamic import with a string literal is correctly replaced', () => {
+    const input = 'import("./module.ext");';
+    const options = { extMapping: { '.ext': '.mjs' } };
+    let code = transform(input, options);
+    assertDynamicImportArgument(code, ['./module.mjs']);
+  });
+
+  test('extension in dynamic import with an interpolated single literal is correctly replaced', () => {
+    const input = 'import("./{some_variable}-module.ext");';
+    const options = { extMapping: { '.ext': '.mjs' } };
+    let code = transform(input, options);
+    assertDynamicImportArgument(code, ['./{some_variable}-module.mjs']);
+  });
+
   test('extension in dynamic import is correctly replaced', () => {
     const input = 'import("./module" + ".ext");';
     const options = { extMapping: { '.ext': '.mjs' } };
