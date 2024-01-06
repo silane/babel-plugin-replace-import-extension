@@ -28,7 +28,7 @@ export { bar } from './module2.mjs';
 
 // In dynamic import, function to replace extension is inserted.
 // Note the actual code is not exactly the same.
-const promise = import(transformExtension('./module3' + '.js'));
+const promise = import(__transformExtension('./module3' + '.js'));
 ```
 
 ## Why We Need This Plugin?
@@ -41,7 +41,7 @@ of the code, there is two ways to tell Node which file is which version.
   with a `type` field specified to the directory.
 
 If you choose the former and you write your code in ESModule and transpile it
-to CommonJS, you have to change the extension of the files while transpiling. 
+to CommonJS, you have to change the extension of the files while transpiling.
 
 In Babel CLI, extension of the output file name can be changed with
 `--out-file-extension` option. But the file name referenced inside the code
@@ -88,6 +88,46 @@ be done by Babel config of
 ```
 Once again, `--out-file-extension` option must be used together to change the
 output file extension.
+
+## Supporting both `mjs` and `cjs` in the same package
+
+If you are using `.mjs` for your source files, you can use babel to generate `.cjs` files for backwards compatibility:
+
+```json
+{
+  "presets": [["@babel/env"]],
+  "plugins": [
+    ["replace-import-extension", { "extMapping": { ".mjs": ".cjs" }}]
+  ]
+}
+```
+
+In your `package.json` specify the entries accordingly:
+
+```json
+{
+  "main": "dist/index.cjs",
+  "module": "src/index.mjs",
+  "source": "src/index.mjs",
+  "exports": {
+    ".": {
+      "require": "dist/index.cjs",
+      "import": "src/index.mjs"
+    },
+    "src/index.mjs": {
+      "import": "src/index.mjs"
+    },
+    "dist/index.cjs": {
+      "require": "dist/index.cjs",
+      "import": "dist/index.cjs"
+    }
+  },
+  "scripts": {
+    "build.cjs": "babel -d dist/ src/ --out-file-extension .cjs",
+    "prepare": "npm run build.cjs"
+  }
+}
+```
 
 ## Options
 ### `extMapping`

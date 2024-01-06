@@ -17,7 +17,7 @@
 const { parseSync } = require('@babel/core');
 
 
-function transformExtension(filepath, extMapping) {
+function __transformExtension(filepath, extMapping) {
   if(!filepath.startsWith('./') && !filepath.startsWith('../')) {
     // Package import
     return filepath;
@@ -42,11 +42,13 @@ function transformExtension(filepath, extMapping) {
   }
   return filepath;
 }
+
 const astTransformExtension = parseSync(
-  `(${transformExtension.toString()})`,
+  `(${__transformExtension.toString()})`,
   { babelrc: false, configFile: false }
 ).program.body[0].expression;
 
+const transFormExtensionInjections = new Set();
 
 function getOption(state, key) {
   const opts = state.opts || {};
@@ -64,7 +66,7 @@ module.exports = function({ types: t }) {
         }
         const source = path.node.source;
 
-        source.value = transformExtension(source.value, extMapping);
+        source.value = __transformExtension(source.value, extMapping);
       },
       // For re-exporting
       'ExportNamedDeclaration|ExportAllDeclaration'(path, state) {
@@ -77,12 +79,10 @@ module.exports = function({ types: t }) {
           return;
         }
 
-        source.value = transformExtension(source.value, extMapping);
+        source.value = __transformExtension(source.value, extMapping);
       },
       // For dynamic import
       CallExpression(path, state) {
-        // TODO: Implement dynamic import
-
         const opts = state.opts || {};
         const extMapping = opts.extMapping;
         if(!extMapping) {
@@ -99,8 +99,25 @@ module.exports = function({ types: t }) {
         );
 
         const argument = path.get('arguments.0');
+
+        // transform the string directly if it ends with an constant extension
+        if (argument.type === 'StringLiteral' && /\.(\w+)$/.test(argument.node.value)) {
+          argument.node.value = __transformExtension(argument.node.value, extMapping);
+          return;
+        }
+
+        // find the top-level scope
+        const programPath = path.findParent(path => path.isProgram());
+
+        if (!transFormExtensionInjections.has(programPath)) {
+          // inject at the the top-level scope
+          programPath.unshiftContainer('body', astTransformExtension);
+          transFormExtensionInjections.add(programPath);
+        }
+
+        // call the transform function
         argument.replaceWith(t.callExpression(
-          astTransformExtension, [argument.node, astExtMapping]
+          t.identifier('__transformExtension'), [argument.node, astExtMapping]
         ));
       },
     },
