@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/silane/babel-plugin-replace-import-extension.git"
+    "url": "git+https://github.com/silane/babel-plugin-replace-import-extension.git"
   },
   "scripts": {
     "test": "jest"
